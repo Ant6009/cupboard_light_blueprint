@@ -1,0 +1,40 @@
+blueprint:
+  name: Toilet Light
+  description: Turn on a light when door is opened, Turn off when kight is open again
+  domain: automation
+  input:
+    doorsensor_entity:
+      name: Door Sensor
+      selector:
+        entity:
+          domain: binary_sensor
+# My sensors has device_class opening but it's commented 
+# for now since not every sensor uses 'opening' as default
+#          device_class: opening
+    light_target:
+      name: Light
+      selector:
+        target:
+          entity:
+            domain: light
+
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  platform: state
+  entity_id: !input doorsensor_entity
+  from: "off"
+  to: "on"
+
+condition:
+  - platform: state
+    entity_id: input_boolean.door
+    state: "on"
+
+action:
+  - service : input_boolean.door.toggle
+
+  - service: light.toggle
+    target: !input light_target
